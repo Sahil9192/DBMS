@@ -1,188 +1,134 @@
-### DDL Statements
+### SQL Installation Guide
 
-1. **Creating Tables**
+#### MySQL Installation
 
-```sql
--- Create Authors Table
-CREATE TABLE Authors (
-    AuthorID INT PRIMARY KEY,
-    AuthorName VARCHAR(100) NOT NULL,
-    BirthYear INT,
-    Country VARCHAR(50)
-);
+**Windows:**
 
--- Create Books Table
-CREATE TABLE Books (
-    BookID INT PRIMARY KEY,
-    Title VARCHAR(200) NOT NULL,
-    AuthorID INT,
-    PublishedYear INT,
-    Price DECIMAL(10, 2),
-    CONSTRAINT fk_author FOREIGN KEY (AuthorID) REFERENCES Authors(AuthorID)
-);
+1. **Download MySQL Installer:**
+   - Go to the [MySQL Downloads page](https://dev.mysql.com/downloads/installer/).
+   - Download the MySQL Installer (choose the appropriate version for your system).
 
--- Create Customers Table
-CREATE TABLE Customers (
-    CustomerID INT PRIMARY KEY,
-    CustomerName VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE,
-    PhoneNumber VARCHAR(15),
-    Address VARCHAR(200)
-);
+2. **Install MySQL:**
+   - Run the downloaded installer.
+   - Follow the setup wizard. Choose the setup type (Developer Default is a good start).
+   - Configure MySQL Server by setting up the server type, port number, and root password.
 
--- Create Orders Table
-CREATE TABLE Orders (
-    OrderID INT PRIMARY KEY,
-    CustomerID INT,
-    OrderDate DATE NOT NULL,
-    TotalAmount DECIMAL(10, 2),
-    CONSTRAINT fk_customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-);
+3. **Verify Installation:**
+   - Open a command prompt.
+   - Type `mysql -u root -p` and enter the root password you set during installation.
 
--- Create OrderDetails Table
-CREATE TABLE OrderDetails (
-    OrderDetailID INT PRIMARY KEY,
-    OrderID INT,
-    BookID INT,
-    Quantity INT NOT NULL,
-    Price DECIMAL(10, 2) NOT NULL,
-    CONSTRAINT fk_order FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-    CONSTRAINT fk_book FOREIGN KEY (BookID) REFERENCES Books(BookID)
-);
+**macOS:**
 
-```
+1. **Using Homebrew:**
+   - Install Homebrew if you haven't already: 
+     ```sh
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+     ```
+   - Install MySQL:
+     ```sh
+     brew install mysql
+     ```
 
-1. **Creating a View**
+2. **Start MySQL:**
+   - Start the MySQL service:
+     ```sh
+     brew services start mysql
+     ```
 
-```sql
--- Create a view to display detailed order information
-CREATE VIEW OrderDetailsView AS
-SELECT
-    Orders.OrderID,
-    Customers.CustomerName,
-    Books.Title,
-    OrderDetails.Quantity,
-    OrderDetails.Price,
-    Orders.OrderDate
-FROM
-    OrderDetails
-JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
-JOIN Customers ON Orders.CustomerID = Customers.CustomerID
-JOIN Books ON OrderDetails.BookID = Books.BookID;
+3. **Verify Installation:**
+   - Run MySQL:
+     ```sh
+     mysql -u root
+     ```
 
-```
+**Linux (Ubuntu):**
 
-1. **Creating an Index**
+1. **Install MySQL:**
+   ```sh
+   sudo apt update
+   sudo apt install mysql-server
+   ```
 
-```sql
--- Create an index on the Title column in the Books table for faster searches
-CREATE INDEX idx_book_title ON Books(Title);
+2. **Secure MySQL Installation:**
+   ```sh
+   sudo mysql_secure_installation
+   ```
 
-```
+3. **Verify Installation:**
+   ```sh
+   sudo mysql
+   ```
 
-1. **Creating a Sequence**
+### NoSQL and MongoDB Installation Guide
 
-```sql
--- Create a sequence for generating OrderID
-CREATE SEQUENCE seq_order_id
-START WITH 1
-INCREMENT BY 1
-NOCACHE;
+#### MongoDB Installation
 
-```
+**Windows:**
 
-1. **Creating a Synonym**
+1. **Download MongoDB:**
+   - Go to the [MongoDB Download Center](https://www.mongodb.com/try/download/community).
+   - Download the MSI package for Windows.
 
-```sql
--- Create a synonym for the Customers table
-CREATE SYNONYM Syn_Customers FOR Customers;
+2. **Install MongoDB:**
+   - Run the downloaded MSI package.
+   - Follow the setup wizard, including the option to install MongoDB as a service.
 
-```
+3. **Verify Installation:**
+   - Open a command prompt.
+   - Type `mongo` to start the MongoDB shell.
 
-### DML Statements
+**macOS:**
 
-Now let's write at least 10 SQL queries to demonstrate the use of DML statements.
+1. **Using Homebrew:**
+   - Install MongoDB:
+     ```sh
+     brew tap mongodb/brew
+     brew install mongodb-community
+     ```
 
-1. **Inserting Data**
+2. **Start MongoDB:**
+   - Start the MongoDB service:
+     ```sh
+     brew services start mongodb/brew/mongodb-community
+     ```
 
-```sql
--- Insert into Authors
-INSERT INTO Authors (AuthorID, AuthorName, BirthYear, Country) VALUES (1, 'George Orwell', 1903, 'United Kingdom');
-INSERT INTO Authors (AuthorID, AuthorName, BirthYear, Country) VALUES (2, 'Harper Lee', 1926, 'United States');
+3. **Verify Installation:**
+   - Run MongoDB shell:
+     ```sh
+     mongo
+     ```
 
--- Insert into Books
-INSERT INTO Books (BookID, Title, AuthorID, PublishedYear, Price) VALUES (1, '1984', 1, 1949, 15.99);
-INSERT INTO Books (BookID, Title, AuthorID, PublishedYear, Price) VALUES (2, 'To Kill a Mockingbird', 2, 1960, 10.99);
+**Linux (Ubuntu):**
 
--- Insert into Customers
-INSERT INTO Customers (CustomerID, CustomerName, Email, PhoneNumber, Address) VALUES (1, 'John Doe', 'john.doe@example.com', '1234567890', '123 Main St');
+1. **Import the public key used by the package management system:**
+   ```sh
+   wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+   ```
 
--- Insert into Orders
-INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount) VALUES (seq_order_id.NEXTVAL, 1, '2023-08-01', 26.98);
+2. **Create a list file for MongoDB:**
+   ```sh
+   echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+   ```
 
--- Insert into OrderDetails
-INSERT INTO OrderDetails (OrderDetailID, OrderID, BookID, Quantity, Price) VALUES (1, 1, 1, 1, 15.99);
-INSERT INTO OrderDetails (OrderDetailID, OrderID, BookID, Quantity, Price) VALUES (2, 1, 2, 1, 10.99);
+3. **Reload local package database:**
+   ```sh
+   sudo apt update
+   ```
 
-```
+4. **Install MongoDB packages:**
+   ```sh
+   sudo apt install -y mongodb-org
+   ```
 
-1. **Selecting Data**
+5. **Start MongoDB:**
+   ```sh
+   sudo systemctl start mongod
+   ```
 
-```sql
--- Select all books
-SELECT * FROM Books;
+6. **Verify Installation:**
+   - Run MongoDB shell:
+     ```sh
+     mongo
+     ```
 
--- Select all customers who have placed orders
-SELECT DISTINCT Customers.CustomerName
-FROM Customers
-JOIN Orders ON Customers.CustomerID = Orders.CustomerID;
-
--- Select orders with details
-SELECT * FROM OrderDetailsView;
-
-```
-
-1. **Updating Data**
-
-```sql
--- Update the price of a book
-UPDATE Books
-SET Price = 12.99
-WHERE BookID = 2;
-
-```
-
-1. **Deleting Data**
-
-```sql
--- Delete an order
-DELETE FROM Orders
-WHERE OrderID = 1;
-
-```
-
-1. **Using Operators and Functions**
-
-```sql
--- Select books published before 1950
-SELECT * FROM Books
-WHERE PublishedYear < 1950;
-
--- Select the total number of orders
-SELECT COUNT(*) AS TotalOrders FROM Orders;
-
--- Select the average price of books
-SELECT AVG(Price) AS AveragePrice FROM Books;
-
--- Select all books with 'Kill' in the title
-SELECT * FROM Books
-WHERE Title LIKE '%Kill%';
-
--- Select the customer who has the longest name
-SELECT CustomerName FROM Customers
-ORDER BY LENGTH(CustomerName) DESC
-LIMIT 1;
-
-```
-
-These queries and statements demonstrate a variety of SQL concepts, including the creation and use of different SQL objects, constraints, and various DML operations.
+With these steps, you should have both SQL (MySQL) and NoSQL (MongoDB) databases installed and ready to use on your system. If you encounter any issues or need further assistance with the installation, feel free to ask!
