@@ -1,6 +1,10 @@
-### DDL Statements
+### SQL DDL Statements
 
-1. **Creating Tables**
+**DDL (Data Definition Language)** statements are used to define and modify database structures such as tables, indexes, and views.
+
+1. **Creating Tables:**
+
+Tables are fundamental structures in SQL where data is stored. Here’s an example of creating tables with different constraints.
 
 ```sql
 -- Create Authors Table
@@ -11,7 +15,7 @@ CREATE TABLE Authors (
     Country VARCHAR(50)
 );
 
--- Create Books Table
+-- Create Books Table with a foreign key constraint
 CREATE TABLE Books (
     BookID INT PRIMARY KEY,
     Title VARCHAR(200) NOT NULL,
@@ -20,169 +24,125 @@ CREATE TABLE Books (
     Price DECIMAL(10, 2),
     CONSTRAINT fk_author FOREIGN KEY (AuthorID) REFERENCES Authors(AuthorID)
 );
-
--- Create Customers Table
-CREATE TABLE Customers (
-    CustomerID INT PRIMARY KEY,
-    CustomerName VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE,
-    PhoneNumber VARCHAR(15),
-    Address VARCHAR(200)
-);
-
--- Create Orders Table
-CREATE TABLE Orders (
-    OrderID INT PRIMARY KEY,
-    CustomerID INT,
-    OrderDate DATE NOT NULL,
-    TotalAmount DECIMAL(10, 2),
-    CONSTRAINT fk_customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-);
-
--- Create OrderDetails Table
-CREATE TABLE OrderDetails (
-    OrderDetailID INT PRIMARY KEY,
-    OrderID INT,
-    BookID INT,
-    Quantity INT NOT NULL,
-    Price DECIMAL(10, 2) NOT NULL,
-    CONSTRAINT fk_order FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-    CONSTRAINT fk_book FOREIGN KEY (BookID) REFERENCES Books(BookID)
-);
-
 ```
 
-1. **Creating a View**
+2. **Creating a View:**
+
+A **view** is a virtual table based on the result-set of an SQL query.
 
 ```sql
--- Create a view to display detailed order information
-CREATE VIEW OrderDetailsView AS
-SELECT
-    Orders.OrderID,
-    Customers.CustomerName,
+-- Create a view to display detailed book information
+CREATE VIEW BookDetails AS
+SELECT 
+    Books.BookID,
     Books.Title,
-    OrderDetails.Quantity,
-    OrderDetails.Price,
-    Orders.OrderDate
-FROM
-    OrderDetails
-JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
-JOIN Customers ON Orders.CustomerID = Customers.CustomerID
-JOIN Books ON OrderDetails.BookID = Books.BookID;
-
+    Authors.AuthorName,
+    Books.PublishedYear,
+    Books.Price
+FROM 
+    Books
+JOIN Authors ON Books.AuthorID = Authors.AuthorID;
 ```
 
-1. **Creating an Index**
+3. **Creating an Index:**
+
+An **index** improves the speed of data retrieval operations on a table at the cost of additional writes and storage space.
 
 ```sql
--- Create an index on the Title column in the Books table for faster searches
+-- Create an index on the Title column in the Books table
 CREATE INDEX idx_book_title ON Books(Title);
-
 ```
 
-1. **Creating a Sequence**
+4. **Creating a Sequence:**
+
+A **sequence** generates a sequence of numeric values according to specified rules.
 
 ```sql
--- Create a sequence for generating OrderID
-CREATE SEQUENCE seq_order_id
+-- Create a sequence for generating BookID
+CREATE SEQUENCE seq_book_id
 START WITH 1
 INCREMENT BY 1
 NOCACHE;
-
 ```
 
-1. **Creating a Synonym**
+5. **Creating a Synonym:**
+
+A **synonym** is an alternative name for database objects.
 
 ```sql
--- Create a synonym for the Customers table
-CREATE SYNONYM Syn_Customers FOR Customers;
-
+-- Create a synonym for the Authors table
+CREATE SYNONYM Syn_Authors FOR Authors;
 ```
 
-### DML Statements
+### SQL DML Statements
 
-Now let's write at least 10 SQL queries to demonstrate the use of DML statements.
+**DML (Data Manipulation Language)** statements are used for managing data within schema objects. It primarily deals with operations like SELECT, INSERT, UPDATE, and DELETE.
 
-1. **Inserting Data**
+1. **Inserting Data:**
+
+The **INSERT** statement is used to add new rows to a table.
 
 ```sql
--- Insert into Authors
+-- Insert data into Authors table
 INSERT INTO Authors (AuthorID, AuthorName, BirthYear, Country) VALUES (1, 'George Orwell', 1903, 'United Kingdom');
 INSERT INTO Authors (AuthorID, AuthorName, BirthYear, Country) VALUES (2, 'Harper Lee', 1926, 'United States');
 
--- Insert into Books
+-- Insert data into Books table
 INSERT INTO Books (BookID, Title, AuthorID, PublishedYear, Price) VALUES (1, '1984', 1, 1949, 15.99);
 INSERT INTO Books (BookID, Title, AuthorID, PublishedYear, Price) VALUES (2, 'To Kill a Mockingbird', 2, 1960, 10.99);
-
--- Insert into Customers
-INSERT INTO Customers (CustomerID, CustomerName, Email, PhoneNumber, Address) VALUES (1, 'John Doe', 'john.doe@example.com', '1234567890', '123 Main St');
-
--- Insert into Orders
-INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount) VALUES (seq_order_id.NEXTVAL, 1, '2023-08-01', 26.98);
-
--- Insert into OrderDetails
-INSERT INTO OrderDetails (OrderDetailID, OrderID, BookID, Quantity, Price) VALUES (1, 1, 1, 1, 15.99);
-INSERT INTO OrderDetails (OrderDetailID, OrderID, BookID, Quantity, Price) VALUES (2, 1, 2, 1, 10.99);
-
 ```
 
-1. **Selecting Data**
+2. **Selecting Data:**
+
+The **SELECT** statement is used to fetch data from a database.
 
 ```sql
 -- Select all books
 SELECT * FROM Books;
 
--- Select all customers who have placed orders
-SELECT DISTINCT Customers.CustomerName
-FROM Customers
-JOIN Orders ON Customers.CustomerID = Orders.CustomerID;
-
--- Select orders with details
-SELECT * FROM OrderDetailsView;
-
+-- Select books with price greater than 12
+SELECT * FROM Books WHERE Price > 12;
 ```
 
-1. **Updating Data**
+3. **Updating Data:**
+
+The **UPDATE** statement is used to modify existing records in a table.
 
 ```sql
 -- Update the price of a book
 UPDATE Books
 SET Price = 12.99
 WHERE BookID = 2;
-
 ```
 
-1. **Deleting Data**
+4. **Deleting Data:**
+
+The **DELETE** statement is used to remove existing records from a table.
 
 ```sql
--- Delete an order
-DELETE FROM Orders
-WHERE OrderID = 1;
-
+-- Delete a book
+DELETE FROM Books
+WHERE BookID = 1;
 ```
 
-1. **Using Operators and Functions**
+5. **Using Operators and Functions:**
+
+Operators and functions can be used in SQL queries for more complex operations.
 
 ```sql
 -- Select books published before 1950
-SELECT * FROM Books
-WHERE PublishedYear < 1950;
+SELECT * FROM Books WHERE PublishedYear < 1950;
 
--- Select the total number of orders
-SELECT COUNT(*) AS TotalOrders FROM Orders;
+-- Select the total number of books
+SELECT COUNT(*) AS TotalBooks FROM Books;
 
 -- Select the average price of books
 SELECT AVG(Price) AS AveragePrice FROM Books;
 
 -- Select all books with 'Kill' in the title
-SELECT * FROM Books
-WHERE Title LIKE '%Kill%';
+SELECT * FROM Books WHERE Title LIKE '%Kill%';
 
--- Select the customer who has the longest name
-SELECT CustomerName FROM Customers
-ORDER BY LENGTH(CustomerName) DESC
-LIMIT 1;
-
+-- Select the author who has written the most books
+SELECT AuthorID, COUNT(*) AS BookCount FROM Books GROUP BY AuthorID ORDER BY BookCount DESC LIMIT 1;
 ```
 
-These queries and statements demonstrate a variety of SQL concepts, including the creation and use of different SQL objects, constraints, and various DML operations.
