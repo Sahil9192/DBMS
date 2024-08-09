@@ -1,72 +1,7 @@
-### Sample Database Schema
+### 1. **Inner Join**
 
-1. **Authors Table:**
-
-```sql
-CREATE TABLE Authors (
-    AuthorID INT PRIMARY KEY,
-    AuthorName VARCHAR(100) NOT NULL,
-    BirthYear INT,
-    Country VARCHAR(50)
-);
-```
-
-2. **Books Table:**
-
-```sql
-CREATE TABLE Books (
-    BookID INT AUTO_INCREMENT PRIMARY KEY,
-    Title VARCHAR(200) NOT NULL,
-    AuthorID INT,
-    PublishedYear INT,
-    Price DECIMAL(10, 2),
-    CONSTRAINT fk_author FOREIGN KEY (AuthorID) REFERENCES Authors(AuthorID)
-);
-```
-
-3. **Customers Table:**
-
-```sql
-CREATE TABLE Customers (
-    CustomerID INT AUTO_INCREMENT PRIMARY KEY,
-    CustomerName VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE,
-    PhoneNumber VARCHAR(15),
-    Address VARCHAR(200)
-);
-```
-
-4. **Orders Table:**
-
-```sql
-CREATE TABLE Orders (
-    OrderID INT AUTO_INCREMENT PRIMARY KEY,
-    CustomerID INT,
-    OrderDate DATE NOT NULL,
-    TotalAmount DECIMAL(10, 2),
-    CONSTRAINT fk_customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-);
-```
-
-5. **OrderDetails Table:**
-
-```sql
-CREATE TABLE OrderDetails (
-    OrderDetailID INT AUTO_INCREMENT PRIMARY KEY,
-    OrderID INT,
-    BookID INT,
-    Quantity INT NOT NULL,
-    Price DECIMAL(10, 2) NOT NULL,
-    CONSTRAINT fk_order FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-    CONSTRAINT fk_book FOREIGN KEY (BookID) REFERENCES Books(BookID)
-);
-```
-
-### SQL Queries
-
-1. **Inner Join:**
-
-Retrieve all orders along with the customer details.
+**Description:**
+An `INNER JOIN` returns only the rows that have matching values in both tables. In this query, we retrieve all orders along with the customer details. The `Orders` and `Customers` tables are joined on the `CustomerID` column.
 
 ```sql
 SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate, Orders.TotalAmount
@@ -74,9 +9,10 @@ FROM Orders
 INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
 ```
 
-2. **Left Join:**
+### 2. **Left Join**
 
-Get all books and their authors, including books that do not have an author (if applicable).
+**Description:**
+A `LEFT JOIN` returns all rows from the left table (in this case, `Books`), and the matched rows from the right table (`Authors`). If no match is found, NULL values are returned for columns from the right table. This query gets all books and their authors, including books that do not have an author.
 
 ```sql
 SELECT Books.Title, Authors.AuthorName
@@ -84,9 +20,10 @@ FROM Books
 LEFT JOIN Authors ON Books.AuthorID = Authors.AuthorID;
 ```
 
-3. **Right Join:**
+### 3. **Right Join**
 
-Retrieve all authors and the books they have written, including authors who have not written any books.
+**Description:**
+A `RIGHT JOIN` returns all rows from the right table (`Authors`) and the matched rows from the left table (`Books`). If there is no match, NULL values are returned for columns from the left table. This query retrieves all authors and the books they have written, including authors who have not written any books.
 
 ```sql
 SELECT Authors.AuthorName, Books.Title
@@ -94,9 +31,10 @@ FROM Authors
 RIGHT JOIN Books ON Authors.AuthorID = Books.AuthorID;
 ```
 
-4. **Full Outer Join:**
+### 4. **Full Outer Join**
 
-MySQL does not support `FULL OUTER JOIN` directly, but you can simulate it using `UNION` of `LEFT JOIN` and `RIGHT JOIN`.
+**Description:**
+MySQL does not directly support `FULL OUTER JOIN`, but we can simulate it using a combination of `LEFT JOIN` and `RIGHT JOIN` with `UNION`. This query returns all authors and books, showing pairs where the author and book are linked, and including all authors and books even if there is no match.
 
 ```sql
 SELECT Authors.AuthorName, Books.Title
@@ -110,9 +48,10 @@ FROM Authors
 RIGHT JOIN Books ON Authors.AuthorID = Books.AuthorID;
 ```
 
-5. **Self Join:**
+### 5. **Self Join**
 
-Find books by the same author, showing pairs of books written by the same author.
+**Description:**
+A `SELF JOIN` is used to join a table with itself. This can be useful when you need to compare rows within the same table. In this query, we find pairs of books written by the same author, showing the titles of two different books by the same author.
 
 ```sql
 SELECT b1.Title AS Book1, b2.Title AS Book2, a.AuthorName
@@ -121,9 +60,10 @@ INNER JOIN Books b2 ON b1.AuthorID = b2.AuthorID AND b1.BookID <> b2.BookID
 INNER JOIN Authors a ON b1.AuthorID = a.AuthorID;
 ```
 
-6. **Sub-Query (Scalar Subquery):**
+### 6. **Scalar Sub-Query**
 
-Find the customer who has made the highest total amount of purchases.
+**Description:**
+A scalar sub-query is a sub-query that returns a single value. In this query, we find the customer who has made the highest total amount of purchases by first calculating the total purchase amount for each customer in a sub-query.
 
 ```sql
 SELECT CustomerName
@@ -137,9 +77,10 @@ WHERE CustomerID = (
 );
 ```
 
-7. **Sub-Query (Correlated Subquery):**
+### 7. **Correlated Sub-Query**
 
-List all books that have been ordered more than the average quantity ordered for all books.
+**Description:**
+A correlated sub-query is a sub-query that references columns from the outer query. In this query, we list all books that have been ordered more than the average quantity ordered for all books. The sub-query calculates the average total quantity ordered for each book.
 
 ```sql
 SELECT Title
@@ -159,9 +100,10 @@ WHERE BookID IN (
 );
 ```
 
-8. **View Creation:**
+### 8. **View Creation**
 
-Create a view to show the total number of books ordered and their total price.
+**Description:**
+A `VIEW` is a virtual table based on the result of a SELECT query. Views can simplify complex queries by encapsulating them as reusable objects. In this example, we create a view to show the total number of books ordered and their total price.
 
 ```sql
 CREATE VIEW BookOrderSummary AS
@@ -171,17 +113,19 @@ INNER JOIN Books ON OrderDetails.BookID = Books.BookID
 GROUP BY Books.Title;
 ```
 
-9. **Query Using a View:**
+### 9. **Query Using a View**
 
-Select all records from the view created above.
+**Description:**
+Once a view is created, it can be queried just like a regular table. This query selects all records from the `BookOrderSummary` view created earlier.
 
 ```sql
 SELECT * FROM BookOrderSummary;
 ```
 
-10. **Sub-Query with `EXISTS`:**
+### 10. **Sub-Query with `EXISTS`**
 
-Find customers who have placed at least one order.
+**Description:**
+The `EXISTS` keyword is used to test for the existence of any record in a sub-query. This query finds customers who have placed at least one order by checking for the existence of orders linked to each customer.
 
 ```sql
 SELECT CustomerName
@@ -192,5 +136,3 @@ WHERE EXISTS (
     WHERE Orders.CustomerID = Customers.CustomerID
 );
 ```
-
-These queries cover various types of joins (inner, left, right, full outer), sub-queries (scalar, correlated), and views, demonstrating a range of SQL capabilities for querying and managing data.
